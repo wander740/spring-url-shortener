@@ -7,9 +7,10 @@ import com.example.demo.model.Url;
 
 @Component
 public class UrlMapper {
-    public Url toEntity(UrlDTO url, String tinyUrl){
+    public Url toEntity(UrlDTO url, String tinyUrl, Long id){
         if(url == null) return null;
         return Url.builder()
+            .id(id)
             .longURL(url.url())
             .shortURL(tinyUrl)
             .build();

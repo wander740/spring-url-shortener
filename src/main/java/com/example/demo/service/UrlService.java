@@ -6,6 +6,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.example.demo.dto.UrlDTO;
 import com.example.demo.dto.mapper.UrlMapper;
+import com.example.demo.generateid.GenerateAdapter;
 import com.example.demo.repository.UrlRepository;
 
 @Service
@@ -15,11 +16,13 @@ public class UrlService {
     private String urlApi;
     private final UrlRepository urlRepository;
     private final UrlMapper urlMapper;
+    private final GenerateAdapter generateAdapter;
     private String characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    public UrlService(UrlRepository urlRepository, UrlMapper urlMapper){
+    public UrlService(UrlRepository urlRepository, UrlMapper urlMapper, GenerateAdapter generateAdapter){
         this.urlRepository = urlRepository;
         this.urlMapper = urlMapper;
+        this.generateAdapter = generateAdapter;
     }
 
     public UrlDTO tinyUrl(UrlDTO url){
@@ -28,11 +31,9 @@ public class UrlService {
             return UrlDTO.builder().url(urlApi.concat(findUrl.get().getShortURL())).build();
         }
 
-        // TODO: passa o id da url gerada
-        //var id = new BigInteger(UUID.randomUUID().toString().replace("-", ""), 16);
-        //System.out.println("id> "+id);
-        var tinyUrl = sixTwoConversion(11157L);
-        this.urlRepository.save(urlMapper.toEntity(url, tinyUrl));
+        var id = generateAdapter.generate();
+        var tinyUrl = sixTwoConversion(id);
+        this.urlRepository.save(urlMapper.toEntity(url, tinyUrl, id));
         return UrlDTO.builder().url(urlApi.concat(tinyUrl)).build();
     }
 
