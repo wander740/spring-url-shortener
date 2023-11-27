@@ -2,13 +2,19 @@ package com.example.demo.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.example.demo.dto.UrlDTO;
 import com.example.demo.dto.mapper.UrlMapper;
+import com.example.demo.exception.RecordNotFoundException;
 import com.example.demo.generateid.GenerateAdapter;
 import com.example.demo.repository.UrlRepository;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+
+@Validated
 @Service
 public class UrlService {
 
@@ -25,7 +31,7 @@ public class UrlService {
         this.generateAdapter = generateAdapter;
     }
 
-    public UrlDTO tinyUrl(UrlDTO url){
+    public UrlDTO tinyUrl(@NotEmpty @Valid UrlDTO url){
         var findUrl = this.urlRepository.findByLongURL(url.url());
         if(findUrl.isPresent()) {
             return UrlDTO.builder().url(urlApi.concat(findUrl.get().getShortURL())).build();
@@ -38,7 +44,7 @@ public class UrlService {
     }
 
     public ModelAndView findByShortURL(String url){
-        var findUrl = this.urlRepository.findByShortURL(url).orElseThrow();
+        var findUrl = this.urlRepository.findByShortURL(url).orElseThrow(() -> new RecordNotFoundException(url));
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("redirect:" + findUrl.getLongURL());
