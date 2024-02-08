@@ -15,7 +15,6 @@ import com.example.demo.dto.UrlDTO;
 import com.example.demo.service.UrlService;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 
 @Validated
 @RestController
@@ -30,7 +29,7 @@ public class UrlController {
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public UrlDTO tinyUrl(@RequestBody @NotEmpty @Valid UrlDTO urlDTO){
+    public UrlDTO tinyUrl(@RequestBody @Valid UrlDTO urlDTO){
         return this.urlService.tinyUrl(urlDTO);
     }
 

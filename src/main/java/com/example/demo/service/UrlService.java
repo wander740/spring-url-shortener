@@ -12,14 +12,13 @@ import com.example.demo.generateid.GenerateAdapter;
 import com.example.demo.repository.UrlRepository;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 
 @Validated
 @Service
 public class UrlService {
 
-    @Value("${api.url}")
-    private String urlApi;
+    //@Value("${api.url}")
+    //private String urlApi;
     private final UrlRepository urlRepository;
     private final UrlMapper urlMapper;
     private final GenerateAdapter generateAdapter;
@@ -31,16 +30,16 @@ public class UrlService {
         this.generateAdapter = generateAdapter;
     }
 
-    public UrlDTO tinyUrl(@NotEmpty @Valid UrlDTO url){
+    public UrlDTO tinyUrl(@Valid UrlDTO url){
         var findUrl = this.urlRepository.findByLongURL(url.url());
         if(findUrl.isPresent()) {
-            return UrlDTO.builder().url(urlApi.concat(findUrl.get().getShortURL())).build();
+            return UrlDTO.builder().url(findUrl.get().getShortURL()).build();
         }
 
         var id = generateAdapter.generate();
         var tinyUrl = sixTwoConversion(id);
         this.urlRepository.save(urlMapper.toEntity(url, tinyUrl, id));
-        return UrlDTO.builder().url(urlApi.concat(tinyUrl)).build();
+        return UrlDTO.builder().url(tinyUrl).build();
     }
 
     public ModelAndView findByShortURL(String url){
